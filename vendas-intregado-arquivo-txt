@@ -1,0 +1,96 @@
+import contextlib
+
+def abrirTabelaPrintar():
+    global v
+    
+    with open("tabela.txt", "r") as tabela:
+        v = [i.split() for i in tabela]
+    
+    print(f"""
+    Código\t\tProduto\t\tValor\t\tEstoque
+    -----------------------------------------------------------
+    {v[1][0]}\t\t\t{v[1][1]}\t\t{v[1][2]}\t\t{v[1][3]}
+    {v[2][0]}\t\t\t{v[2][1]}\t\t{v[2][2]}\t\t{v[2][3]}
+    {v[3][0]}\t\t\t{v[3][1]}\t\t{v[3][2]}\t\t{v[3][3]}
+    -----------------------------------------------------------
+          """)
+    
+def verificarCodigo():
+    global subTotal, numEstoque, qtd, idxEstoqueProduto, qtd, precoProduto, nomeProduto, cont, qtdL
+    
+    sub = 0
+    cont = 0
+    
+    subTotal = []
+    precoProduto = []
+    nomeProduto = []
+    qtdI = 0
+    qtdL = []
+    numEstoque = 0
+    idx = 0
+
+    x = True
+    while x == True:
+        cod = str(input("\nCÓDIGO: "))
+
+        for i in range(1, 4):
+            if cod in v[i][0]:
+                cont += 1
+                numEstoque = v[i][3]
+                idx = i
+                nomeProduto.append(v[i][1])
+                precoProduto.append(float(v[i][2]))
+                qtd = int(input("QUANTIDADE DE COMPRA: "))
+                qtdL.append(qtd)
+                
+                if qtd > int(numEstoque):
+                    print("\nQUANTIDADE NÃO DISPONÍVEL NO MOMENTO")
+                else:
+                    sub = int(numEstoque) - int(qtd)
+                    v[i][3] = int(sub)
+                break
+        else:
+            print("PRODUTO NÃO DISPONÍVEL NO MOMENTO")
+
+        print(f"""
+    Código\t\tProduto\t\tValor\t\tEstoque
+    -----------------------------------------------------------
+    {v[1][0]}\t\t\t{v[1][1]}\t\t{v[1][2]}\t\t{v[1][3]}
+    {v[2][0]}\t\t\t{v[2][1]}\t\t{v[2][2]}\t\t{v[2][3]}
+    {v[3][0]}\t\t\t{v[3][1]}\t\t{v[3][2]}\t\t{v[3][3]}
+    -----------------------------------------------------------
+          """)
+
+        esc = int(input("DESEJA COMPRAR NOVAMENTE? 1 - SIM | 2 - NÃO\n"))
+        if esc == 2:
+            x = False
+
+def subtrairEstoque():
+    for i in range(cont):
+        subTotal.append(precoProduto[i] * qtdL[i])
+
+def notinhaFiscal():
+    print("\n\n\tPRODUTO\t\tQUANTIDADE\t\tSUBTOTAL")
+    print("\t------------------------------------------------")
+    for i in range(cont):
+        print(f"\t{nomeProduto[i]}\t\t{qtdL[i]}\t\t\t{subTotal[i]:.2f}")
+    print("\t------------------------------------------------")
+    print(f"\tTotal\t\t\t\t\t{sum(subTotal):.2f}")
+
+def exportarResultadoParaTxt():
+    arquivo = 'saida-tabela.txt'
+    with open(arquivo, "w") as o:
+        with contextlib.redirect_stdout(o):
+            print("\n\n\tPRODUTO\t\tQUANTIDADE\t\tSUBTOTAL")
+            print("\t------------------------------------------------")
+            for i in range(cont):
+                print(f"\t{nomeProduto[i]}\t\t{qtdL[i]}\t\t\t{subTotal[i]:.2f}")
+            print("\t------------------------------------------------")
+            print(f"\tTotal\t\t\t\t\t{sum(subTotal):.2f}")
+    
+    
+abrirTabelaPrintar()
+verificarCodigo()
+subtrairEstoque()
+notinhaFiscal()
+exportarResultadoParaTxt()
